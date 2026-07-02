@@ -11,7 +11,7 @@ Pack déployable d'intégration **Salesforce ↔ Slack** via Bot API : Flows, Ap
 ## Démarrage rapide
 
 ```bash
-git clone https://github.com/alexandrekuzo/salesforce-slack-recipes.git
+git clone https://github.com/AlexandreKuzo/salesforce-slack-recipes.git
 cd salesforce-slack-recipes
 sf org login web --alias my-org
 sf project deploy start --manifest manifest/ssr-recipe01-package.xml --target-org my-org
