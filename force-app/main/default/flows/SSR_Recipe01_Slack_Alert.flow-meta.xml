@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <description>Envoie l'alerte via SlackService (SSR Stack).</description>
+        <description>Envoie l&apos;alerte via SlackService (SSR Stack).</description>
         <name>Send_Slack_Message</name>
         <label>SSR Send Slack Message</label>
-        <locationX>176</locationX>
-        <locationY>242</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <actionName>SlackInvocable</actionName>
         <actionType>apex</actionType>
         <flowTransactionModel>Automatic</flowTransactionModel>
@@ -28,10 +28,12 @@
             </value>
         </inputParameters>
         <nameSegment>SlackInvocable</nameSegment>
+        <offset>0</offset>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <apiVersion>65.0</apiVersion>
-    <description>Recette 01 SSR — alerte Slack à la création d'une Opportunity (via Bot API + CMDT).</description>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Recette 01 SSR — alerte Slack à la création d&apos;une Opportunity (via Bot API + CMDT).</description>
     <environments>Default</environments>
     <interviewLabel>SSR Recipe 01 - Alerte Nouvelle Opportunite {!$Flow.CurrentDateTime}</interviewLabel>
     <label>SSR Recipe 01 - Alerte Nouvelle Opportunite</label>
@@ -48,11 +50,32 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <start>
-        <locationX>50</locationX>
+    <recordLookups>
+        <name>GetOpportunityOwner</name>
+        <label>Get Opportunity Owner</label>
+        <locationX>0</locationX>
         <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Send_Slack_Message</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>GetOpportunityOwner</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -66,7 +89,7 @@
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <textTemplates>
         <description>Message Slack pour nouvelle opportunité.</description>
         <name>tt_SlackMessage</name>
@@ -74,7 +97,7 @@
         <text>*Nouvelle opportunité 🎯*
 *Compte :* {!$Record.Account.Name}
 *Montant :* {!$Record.Amount}€
-*Propriétaire :* {!$Record.Owner.Name}
+*Propriétaire :* {!GetOpportunityOwner.Name}
 *Stage :* {!$Record.StageName}
 *Clôture :* {!$Record.CloseDate}</text>
     </textTemplates>
