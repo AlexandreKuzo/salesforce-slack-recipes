@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>SlackServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>SSR_Slack_Recipe.recipe_02</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>SSR_Recipe02_Stage_Change_Alert</members>
+        <name>Flow</name>
+    </types>
+    <version>65.0</version>
+</Package>

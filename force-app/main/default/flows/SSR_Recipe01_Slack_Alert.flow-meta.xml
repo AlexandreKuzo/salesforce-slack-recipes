@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Envoie l'alerte via SlackService (SSR Stack).</description>
+        <name>Send_Slack_Message</name>
+        <label>SSR Send Slack Message</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <actionName>SlackInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>message</name>
+            <value>
+                <elementReference>tt_SlackMessage</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipeKey</name>
+            <value>
+                <stringValue>recipe_01</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>SlackInvocable</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>65.0</apiVersion>
+    <description>Recette 01 SSR — alerte Slack à la création d'une Opportunity (via Bot API + CMDT).</description>
+    <environments>Default</environments>
+    <interviewLabel>SSR Recipe 01 - Alerte Nouvelle Opportunite {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SSR Recipe 01 - Alerte Nouvelle Opportunite</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Send_Slack_Message</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Amount</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+    <textTemplates>
+        <description>Message Slack pour nouvelle opportunité.</description>
+        <name>tt_SlackMessage</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>*Nouvelle opportunité 🎯*
+*Compte :* {!$Record.Account.Name}
+*Montant :* {!$Record.Amount}€
+*Propriétaire :* {!$Record.Owner.Name}
+*Stage :* {!$Record.StageName}
+*Clôture :* {!$Record.CloseDate}</text>
+    </textTemplates>
+</Flow>

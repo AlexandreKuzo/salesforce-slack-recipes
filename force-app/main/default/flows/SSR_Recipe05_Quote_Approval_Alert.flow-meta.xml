@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Alerte Slack — devis en attente de validation (recette 05).</description>
+        <name>Send_Slack_Message</name>
+        <label>SSR Send Slack Message</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <actionName>SlackInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>message</name>
+            <value>
+                <elementReference>tt_SlackMessage</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipeKey</name>
+            <value>
+                <stringValue>recipe_05</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>SlackInvocable</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <description>Remise &gt;= 20 % ou montant &gt;= 10 000 (seuils configurables).</description>
+        <name>Check_Threshold</name>
+        <label>Seuil d'approbation ?</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <defaultConnectorLabel>Sous le seuil</defaultConnectorLabel>
+        <rules>
+            <name>Approval_Required</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Discount</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>20.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.GrandTotal</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>10000.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Owner</targetReference>
+            </connector>
+            <label>Oui</label>
+        </rules>
+    </decisions>
+    <description>Recette 05 SSR (POC) — alerte Slack quand un devis passe en In Review avec remise ou montant élevé. Boutons Approuver/Refuser = phase 2.</description>
+    <environments>Default</environments>
+    <interviewLabel>SSR Recipe 05 - Validation Devis {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SSR Recipe 05 - Validation Devis</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Récupère l'opportunité liée (évite $Record.Opportunity.Name dans le Text Template).</description>
+        <name>Get_Opportunity</name>
+        <label>Get Opportunity</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Send_Slack_Message</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OpportunityId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Récupère le commercial propriétaire du devis.</description>
+        <name>Get_Owner</name>
+        <label>Get Owner</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Threshold</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>In Review</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Quote</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+    <textTemplates>
+        <description>Message Slack — devis à valider.</description>
+        <name>tt_SlackMessage</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>📋 *Devis en attente de validation*
+*Devis :* {!$Record.QuoteNumber} — {!$Record.Name}
+*Commercial :* {!Get_Owner.Name}
+*Opportunité :* {!Get_Opportunity.Name}
+*Montant :* {!$Record.GrandTotal}€
+*Remise :* {!$Record.Discount}%
+*Statut :* {!$Record.Status}</text>
+    </textTemplates>
+</Flow>

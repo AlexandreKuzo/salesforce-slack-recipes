@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>SlackApiMock</members>
+        <members>SlackCalloutQueueable</members>
+        <members>SlackInvocable</members>
+        <members>SlackInvocableTest</members>
+        <members>SlackService</members>
+        <members>SlackServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>SSR_Slack_Recipe__mdt</members>
+        <members>SSR_Slack_Settings__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>SSR_Slack_Recipe.recipe_01</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>SSR_Recipe01_Slack_Alert</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>SSR_Slack_User</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>SSR_Slack</members>
+        <name>RemoteSiteSetting</name>
+    </types>
+    <version>65.0</version>
+</Package>

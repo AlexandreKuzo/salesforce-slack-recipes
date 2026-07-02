@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Génère un résumé IA du case et le poste sur Slack (recette 08).</description>
+        <name>Summarize_Case_To_Slack</name>
+        <label>SSR Summarize Case to Slack</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <actionName>CaseSummaryInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>caseId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>CaseSummaryInvocable</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <description>Escalade ou réassignation du case.</description>
+        <name>Check_Trigger</name>
+        <label>Déclencheur valide ?</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <defaultConnectorLabel>Non</defaultConnectorLabel>
+        <rules>
+            <name>Case_Escalated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.IsEscalated</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.IsEscalated</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Summarize_Case_To_Slack</targetReference>
+            </connector>
+            <label>Escalade</label>
+        </rules>
+        <rules>
+            <name>Case_Reassigned</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Summarize_Case_To_Slack</targetReference>
+            </connector>
+            <label>Réassignation</label>
+        </rules>
+    </decisions>
+    <description>Recette 08 SSR — résumé IA d'un case (OpenAI ou fallback) posté sur Slack à l'escalade ou réassignation.</description>
+    <environments>Default</environments>
+    <interviewLabel>SSR Recipe 08 - Resume IA Case {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SSR Recipe 08 - Resume IA Case</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Trigger</targetReference>
+        </connector>
+        <object>Case</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>

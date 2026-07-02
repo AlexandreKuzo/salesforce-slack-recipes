@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>SlackCalloutQueueable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>SlackInvocable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>SlackService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customSettingAccesses>
+        <enabled>true</enabled>
+        <name>SSR_Slack_Settings__c</name>
+    </customSettingAccesses>
+    <description>Accès socle SSR (recettes 01–06). Étendu automatiquement par les manifests 07, 08 et 09.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>SSR Slack User</label>
+    <license>Salesforce</license>
+</PermissionSet>
