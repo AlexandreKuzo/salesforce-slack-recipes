@@ -5,6 +5,18 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>SlackChannelInvocable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>SlackChannelProvisionerQueueable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>SlackChannelService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>SlackInvocable</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -16,7 +28,12 @@
         <enabled>true</enabled>
         <name>SSR_Slack_Settings__c</name>
     </customSettingAccesses>
-    <description>Accès socle SSR (recettes 01–02). Étendu au fil des releases suivantes.</description>
+    <description>Accès socle SSR (recettes 01–02) + recette 07 (channel provisioning). Étendu au fil des releases suivantes.</description>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.SlackChannelId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>SSR Slack User</label>
     <license>Salesforce</license>

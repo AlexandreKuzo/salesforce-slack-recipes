@@ -2,7 +2,7 @@
 
 Pack déployable d'intégration **Salesforce ↔ Slack** via Bot API : Flows, Apex, Custom Metadata et recettes incrémentales.
 
-> **État actuel :** recettes **01** et **02** disponibles. Les recettes 03 à 09 arrivent progressivement — suivez le repo pour les releases.
+> **État actuel :** recettes **01**, **02** et **07** disponibles. Les autres recettes arrivent progressivement — suivez le repo pour les releases.
 
 ## Prérequis
 
@@ -35,6 +35,22 @@ sf project deploy start --manifest manifest/ssr-recipe02-package.xml --target-or
 
 Puis mettre à jour l'enregistrement CMDT `recipe_02` et activer le Flow associé.
 
+Pour la recette 07 (création dynamique de channel) :
+
+```bash
+sf project deploy start --manifest manifest/ssr-recipe07-package.xml --target-org my-org
+```
+
+Cette recette ne route pas via un channel fixe : elle **crée** un channel `deal-<account>-<année>` quand une opportunité passe en Closed Won, puis y invite l'owner et son manager (matching par email Slack).
+
+1. Scopes bot supplémentaires : `channels:manage`, `channels:read`, `users:read.email`
+2. Renseigner le champ **Manager** de l'utilisateur owner (optionnel — sinon seul l'owner est invité)
+3. Les emails Salesforce (owner/manager) doivent exister dans le workspace Slack
+4. Assigner le Permission Set `SSR_Slack_User` (inclut la FLS lecture seule du champ `Opportunity.SlackChannelId__c`)
+5. **Activer** le Flow `SSR Recipe 07 - Creation Channel Slack`
+
+Le champ `SlackChannelId__c` est en **lecture seule** : il est alimenté automatiquement par l'intégration Apex, jamais manuellement.
+
 ## Recettes
 
 | # | Statut | Manifest | Description |
@@ -45,7 +61,7 @@ Puis mettre à jour l'enregistrement CMDT `recipe_02` et activer le Flow associ�
 | 04 | 🔜 Bientôt | — | Closed Won manager |
 | 05 | 🔜 Bientôt | — | Approbation devis |
 | 06 | 🔜 Bientôt | — | Commande expédiée |
-| 07 | 🔜 Bientôt | — | Création de channel Slack |
+| 07 | ✅ Disponible | `manifest/ssr-recipe07-package.xml` | Création dynamique de channel Slack (deal room) + invitation owner/manager |
 | 08 | 🔜 Bientôt | — | Résumé Case via OpenAI |
 | 09 | 🔜 Bientôt | — | Agentforce Pipeline Monitor |
 

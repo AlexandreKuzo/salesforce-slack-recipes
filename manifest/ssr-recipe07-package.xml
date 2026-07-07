@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>SlackChannelApiMock</members>
+        <members>SlackChannelInvocable</members>
+        <members>SlackChannelProvisionerQueueable</members>
+        <members>SlackChannelProvisionerTest</members>
+        <members>SlackChannelService</members>
+        <members>SlackService</members>
+        <members>SlackServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Opportunity.SlackChannelId__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>SSR_Recipe07_Slack_Channel_Create</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>SSR_Slack_User</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>65.0</version>
+</Package>
