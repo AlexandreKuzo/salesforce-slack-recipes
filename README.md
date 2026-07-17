@@ -2,7 +2,7 @@
 
 Pack déployable d'intégration **Salesforce ↔ Slack** via Bot API : Flows, Apex, Custom Metadata et recettes incrémentales.
 
-> **État actuel :** recettes **01**, **02** et **07** disponibles. Les autres recettes arrivent progressivement — suivez le repo pour les releases.
+> **État actuel :** recettes **01**, **02**, **07** et **08** disponibles. Les autres recettes arrivent progressivement — suivez le repo pour les releases.
 
 ## Prérequis
 
@@ -51,6 +51,27 @@ Cette recette ne route pas via un channel fixe : elle **crée** un channel `deal
 
 Le champ `SlackChannelId__c` est en **lecture seule** : il est alimenté automatiquement par l'intégration Apex, jamais manuellement.
 
+Pour la recette 08 (résumé IA d'un Case en DM Slack) :
+
+```bash
+sf project deploy start --manifest manifest/ssr-recipe08-package.xml --target-org my-org
+```
+
+Cette recette **ne poste pas dans un channel fixe** : elle résume le Case (OpenAI si clé configurée, sinon fallback rule-based), résout l'**owner** Slack via `users.lookupByEmail`, puis envoie un **DM**.
+
+1. Scope bot supplémentaire : `users:read.email` (déjà requis pour la recette 07)
+2. Optionnel : Setup → **SSR Slack Settings** → renseigner **OpenAI API Key** (`sk-...`)
+3. L'email Salesforce de l'owner du Case doit exister dans le workspace Slack
+4. Assigner le Permission Set `SSR_Slack_User`
+5. **Activer** le Flow `SSR Recipe 08 - Resume Case IA`
+6. Ajouter le Quick Action `Escalader ce Case` (`Case.SSR_Escalate_Case`) sur la page Case — Setup → **Object Manager** → **Case** → **Page Layouts** (ou **Lightning App Builder** → panneau Highlights) → glisser l'action dans la section « Salesforce Mobile and Lightning Experience Actions »
+
+`IsEscalated` est un champ standard **non exposé en édition libre** dans ce projet (volontairement — voir note ci-dessous). Ce Quick Action coche le champ de façon contrôlée, sans exposer d'autre champ en édition.
+
+> **Pourquoi un Quick Action plutôt qu'une checkbox éditable ?** De nombreuses orgs retirent `IsEscalated` du layout pour éviter des escalades manuelles incohérentes, et pilotent l'escalade soit automatiquement (Setup → **Escalation Rules**, basées sur des délais SLA), soit via une action métier contrôlée comme celle-ci. Le Quick Action déclenche exactement le même Flow que l'escalade automatique.
+>
+> **Le déclencheur du Flow est personnalisable.** `SSR_Recipe08_Case_AI_Summary` se lance sur `IsEscalated = true` OU `OwnerId` changé — mais ces critères d'entrée se modifient librement dans Flow Builder (par exemple : uniquement sur changement de Priority, sur un champ personnalisé `Need_AI_Summary__c`, ou sur tout autre événement Case pertinent pour votre process).
+
 ## Recettes
 
 | # | Statut | Manifest | Description |
@@ -62,7 +83,7 @@ Le champ `SlackChannelId__c` est en **lecture seule** : il est alimenté automat
 | 05 | 🔜 Bientôt | — | Approbation devis |
 | 06 | 🔜 Bientôt | — | Commande expédiée |
 | 07 | ✅ Disponible | `manifest/ssr-recipe07-package.xml` | Création dynamique de channel Slack (deal room) + invitation owner/manager |
-| 08 | 🔜 Bientôt | — | Résumé Case via OpenAI |
+| 08 | ✅ Disponible | `manifest/ssr-recipe08-package.xml` | Résumé Case (OpenAI / fallback) → DM Slack à l'owner |
 | 09 | 🔜 Bientôt | — | Agentforce Pipeline Monitor |
 
 Déployer les recettes **dans l'ordre** : la recette 01 inclut le socle ; chaque recette suivante ajoute son Flow et son enregistrement CMDT.

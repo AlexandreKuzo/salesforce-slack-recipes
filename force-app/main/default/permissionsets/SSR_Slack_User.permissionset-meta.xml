@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses>
+        <apexClass>CaseSummaryInvocable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CaseSummaryQueueable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CaseSummaryService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>SlackCalloutQueueable</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -28,7 +40,7 @@
         <enabled>true</enabled>
         <name>SSR_Slack_Settings__c</name>
     </customSettingAccesses>
-    <description>Accès socle SSR (recettes 01–02) + recette 07 (channel provisioning). Étendu au fil des releases suivantes.</description>
+    <description>Accès socle SSR (recettes 01–02) + 07 (channel) + 08 (résumé Case IA / DM owner).</description>
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.SlackChannelId__c</field>

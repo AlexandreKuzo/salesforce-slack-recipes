@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CaseSummaryApiMock</members>
+        <members>CaseSummaryInvocable</members>
+        <members>CaseSummaryQueueable</members>
+        <members>CaseSummaryService</members>
+        <members>CaseSummaryServiceTest</members>
+        <members>SlackChannelService</members>
+        <members>SlackService</members>
+        <members>SlackServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>SSR_Slack_Settings__c.OpenAI_Api_Key__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>SSR_Recipe08_Case_AI_Summary</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>SSR_Slack_User</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>SSR_OpenAI</members>
+        <members>SSR_Slack</members>
+        <name>RemoteSiteSetting</name>
+    </types>
+    <types>
+        <members>Case.SSR_Escalate_Case</members>
+        <name>QuickAction</name>
+    </types>
+    <version>65.0</version>
+</Package>
