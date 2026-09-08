@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Points de score par secteur (Lead.Industry) pour le fallback règles de SSR Recipe 10.</description>
+    <label>SSR Lead Industry Score</label>
+    <pluralLabel>SSR Lead Industry Scores</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

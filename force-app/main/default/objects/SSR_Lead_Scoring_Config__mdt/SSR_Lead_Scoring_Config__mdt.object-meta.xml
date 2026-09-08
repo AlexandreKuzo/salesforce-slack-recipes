@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Configuration du scoring et du routage des leads (SSR Recipe 10) : seuils, cible d'assignation, campagne de nurturing, ICP.</description>
+    <label>SSR Lead Scoring Config</label>
+    <pluralLabel>SSR Lead Scoring Configs</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

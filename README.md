@@ -2,7 +2,7 @@
 
 Pack déployable d'intégration **Salesforce ↔ Slack** via Bot API : Flows, Apex, Custom Metadata et recettes incrémentales.
 
-> **État actuel :** recettes **01**, **02**, **07** et **08** disponibles. Les autres recettes arrivent progressivement — suivez le repo pour les releases.
+> **État actuel :** recettes **01**, **02**, **07**, **08** et **10** disponibles. Les autres recettes arrivent progressivement — suivez le repo pour les releases.
 
 ## Prérequis
 
@@ -72,6 +72,31 @@ Cette recette **ne poste pas dans un channel fixe** : elle résume le Case (Open
 >
 > **Le déclencheur du Flow est personnalisable.** `SSR_Recipe08_Case_AI_Summary` se lance sur `IsEscalated = true` OU `OwnerId` changé — mais ces critères d'entrée se modifient librement dans Flow Builder (par exemple : uniquement sur changement de Priority, sur un champ personnalisé `Need_AI_Summary__c`, ou sur tout autre événement Case pertinent pour votre process).
 
+Pour la recette 10 (qualification et routage de lead) :
+
+```bash
+sf project deploy start --manifest manifest/ssr-recipe10-package.xml --target-org my-org
+```
+
+Cette recette **score** chaque nouveau Lead (OpenAI `gpt-4o-mini` si clé configurée, sinon fallback règles secteur + effectif via CMDT), écrit `Score__c` / `AI_Reasoning__c` / `Confidence__c` / `Scored_At__c`, puis **route** selon deux seuils (`SSR_Lead_Scoring_Config__mdt`) :
+
+| Score | Routage |
+|-------|---------|
+| ≥ seuil haut (défaut 70) | **HOT** — réassignation à `Hot_Lead_Owner_Id__c` (si renseigné) + Task « Rappeler sous 1h » |
+| entre les deux seuils | **NURTURE** — ajout à `Nurture_Campaign_Id__c` (si renseignée) |
+| < seuil bas (défaut 40) | **DISQUALIFIED** — `Disqualification_Reason__c` renseigné ; `Lead.Status` passé à `Disqualified_Status__c` (si renseigné) |
+
+Notification : Slack via `SlackService` si la clé `Slack_Recipe_Key__c` (défaut `recipe_10`) résout un channel dans `SSR_Slack_Recipe__mdt` ; sinon **e-mail** à l'owner du Lead (fallback natif).
+
+1. Scope bot Slack : `chat:write` (déjà requis pour la recette 01)
+2. Optionnel : Setup → **SSR Slack Settings** → renseigner **OpenAI API Key** (`sk-...`) — sans clé, le scoring reste fonctionnel en mode règles
+3. Remplacer `C0123456789` dans l'enregistrement CMDT `SSR_Slack_Recipe.recipe_10` par l'ID de votre channel (ou vider `Slack_Recipe_Key__c` pour forcer le fallback e-mail)
+4. Ajuster `SSR_Lead_Scoring_Config.default` (seuils, cible d'assignation, campagne, ICP) et enrichir `SSR_Lead_Industry_Score` (points par secteur)
+5. Assigner le Permission Set `SSR_Slack_User` (inclut la FLS lecture seule des 5 champs `Lead`)
+6. **Activer** le Flow `SSR Recipe 10 - Lead Qualification` (livré en *Draft*)
+
+Le Flow se déclenche à la création d'un Lead (ou sur un Lead encore non scoré) ayant une `Company`. Les critères d'entrée se personnalisent librement dans Flow Builder.
+
 ## Recettes
 
 | # | Statut | Manifest | Description |
@@ -85,6 +110,7 @@ Cette recette **ne poste pas dans un channel fixe** : elle résume le Case (Open
 | 07 | ✅ Disponible | `manifest/ssr-recipe07-package.xml` | Création dynamique de channel Slack (deal room) + invitation owner/manager |
 | 08 | ✅ Disponible | `manifest/ssr-recipe08-package.xml` | Résumé Case (OpenAI / fallback) → DM Slack à l'owner |
 | 09 | 🔜 Bientôt | — | Agentforce Pipeline Monitor |
+| 10 | ✅ Disponible | `manifest/ssr-recipe10-package.xml` | Qualification IA + routage de lead (scoring OpenAI / fallback règles) → HOT / nurturing / disqualification + notification Slack ou e-mail |
 
 Déployer les recettes **dans l'ordre** : la recette 01 inclut le socle ; chaque recette suivante ajoute son Flow et son enregistrement CMDT.
 
