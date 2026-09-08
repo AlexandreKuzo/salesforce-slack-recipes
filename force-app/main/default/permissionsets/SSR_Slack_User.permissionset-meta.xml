@@ -29,6 +29,18 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>LeadQualificationInvocable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>LeadQualificationQueueable</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>LeadScoringService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>SlackInvocable</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -40,7 +52,32 @@
         <enabled>true</enabled>
         <name>SSR_Slack_Settings__c</name>
     </customSettingAccesses>
-    <description>Accès socle SSR (recettes 01–02) + 07 (channel) + 08 (résumé Case IA / DM owner).</description>
+    <description>Accès socle SSR (recettes 01–02) + 07 (channel) + 08 (résumé Case IA / DM owner) + 10 (qualification lead).</description>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.AI_Reasoning__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.Confidence__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.Disqualification_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.Score__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Lead.Scored_At__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.SlackChannelId__c</field>

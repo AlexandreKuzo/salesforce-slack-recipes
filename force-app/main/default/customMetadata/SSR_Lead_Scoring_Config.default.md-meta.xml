@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Default</label>
+    <protected>false</protected>
+    <values>
+        <field>High_Threshold__c</field>
+        <value xsi:type="xsd:double">70.0</value>
+    </values>
+    <values>
+        <field>Low_Threshold__c</field>
+        <value xsi:type="xsd:double">40.0</value>
+    </values>
+    <values>
+        <field>Hot_Lead_Owner_Id__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Nurture_Campaign_Id__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Disqualified_Status__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Slack_Recipe_Key__c</field>
+        <value xsi:type="xsd:string">recipe_10</value>
+    </values>
+    <values>
+        <field>Icp_Description__c</field>
+        <value xsi:type="xsd:string">ICP : entreprises B2B SaaS, 50+ employés, secteurs Technology / Finance / Banking / Healthcare, interlocuteurs décideurs IT, Data ou Finance. Hors ICP : particuliers, TPE &lt; 10 employés, secteurs hors liste.</value>
+    </values>
+</CustomMetadata>

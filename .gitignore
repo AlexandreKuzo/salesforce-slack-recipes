@@ -8,6 +8,15 @@
 .localdevserver/
 deploy-options.json
 
+
+# docs
+docs/
+
+# Claude Code (local session/tooling state; CLAUDE.md is tracked)
+.claude/
+.agents/
+skills-lock.json
+
 # LWC VSCode autocomplete
 **/lwc/jsconfig.json
 

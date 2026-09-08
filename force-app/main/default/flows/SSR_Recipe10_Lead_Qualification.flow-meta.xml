@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Score le Lead (OpenAI ou fallback règles), le route par seuil et notifie Slack/e-mail.</description>
+        <name>Qualify_Lead</name>
+        <label>SSR Qualify Lead</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <actionName>LeadQualificationInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>leadId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>LeadQualificationInvocable</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>65.0</apiVersion>
+    <description>Recette 10 SSR — qualification et routage d'un Lead (scoring IA + fallback règles, notification Slack/e-mail).</description>
+    <environments>Default</environments>
+    <interviewLabel>SSR Recipe 10 - Lead Qualification {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SSR Recipe 10 - Lead Qualification</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Qualify_Lead</targetReference>
+        </connector>
+        <filterFormula>AND( ISBLANK({!$Record.Score__c}), NOT(ISBLANK({!$Record.Company})), NOT({!$Record.IsConverted}) )</filterFormula>
+        <object>Lead</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Confidence__c</fullName>
+    <description>Confiance du scoring entre 0 et 1 (SSR Recipe 10). 0.4 en mode fallback règles.</description>
+    <externalId>false</externalId>
+    <label>Confidence</label>
+    <precision>3</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>
