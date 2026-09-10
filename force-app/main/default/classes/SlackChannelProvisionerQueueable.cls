@@ -45,13 +45,13 @@ public class SlackChannelProvisionerQueueable implements Queueable, Database.All
             log.success('channel', 'Channel « ' + channelName + ' » créé (' + created.channelId + ')');
 
             List<String> slackUserIds = new List<String>();
-            String ownerSlackId = SlackChannelService.lookupUserByEmail(opp.Owner != null ? opp.Owner.Email : null);
+            String ownerSlackId = SlackService.lookupUserByEmail(opp.Owner != null ? opp.Owner.Email : null);
             if (String.isNotBlank(ownerSlackId)) {
                 slackUserIds.add(ownerSlackId);
             }
 
             String managerEmail = opp.Owner != null && opp.Owner.Manager != null ? opp.Owner.Manager.Email : null;
-            String managerSlackId = SlackChannelService.lookupUserByEmail(managerEmail);
+            String managerSlackId = SlackService.lookupUserByEmail(managerEmail);
             if (String.isNotBlank(managerSlackId) && !slackUserIds.contains(managerSlackId)) {
                 slackUserIds.add(managerSlackId);
             }

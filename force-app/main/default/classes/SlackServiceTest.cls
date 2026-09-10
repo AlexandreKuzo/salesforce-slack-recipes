@@ -77,6 +77,20 @@ private class SlackServiceTest {
     }
 
     @IsTest
+    static void lookupUserByEmail_resolvesAndDegrades() {
+        SlackService.testBotTokenOverride = 'xoxb-test-token';
+
+        System.assertEquals(null, SlackService.lookupUserByEmail(null));
+        System.assertEquals(null, SlackService.lookupUserByEmail('  '));
+
+        Test.setMock(HttpCalloutMock.class, new SlackApiMock(true));
+        System.assertEquals('U_LOOKUP01', SlackService.lookupUserByEmail('owner@example.com'));
+
+        Test.setMock(HttpCalloutMock.class, new SlackApiMock(false, 'users_not_found'));
+        System.assertEquals(null, SlackService.lookupUserByEmail('nobody@example.com'));
+    }
+
+    @IsTest
     static void parsePostMessageResponse_invalidJson() {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(500);
@@ -135,6 +149,44 @@ private class SlackServiceTest {
         Test.stopTest();
 
         System.assertEquals(true, responses[0].success);
+    }
+
+    @IsTest
+    static void calloutQueueable_logsSuccessAndFailure() {
+        stubRecipes();
+        SlackService.testBotTokenOverride = 'xoxb-test-token';
+
+        Test.setMock(HttpCalloutMock.class, new SlackApiMock(true));
+        Test.startTest();
+        System.enqueueJob(new SlackCalloutQueueable('recipe_01', null, 'ok path', null));
+        Test.stopTest();
+
+        System.assertEquals('Success',
+            [SELECT Status__c FROM SSR_Log__c WHERE Recipe_Key__c = 'recipe_01' AND Step__c = 'notify' LIMIT 1].Status__c);
+    }
+
+    @IsTest
+    static void calloutQueueable_logsErrorOnSlackFailure() {
+        SlackService.testBotTokenOverride = 'xoxb-test-token';
+        Test.setMock(HttpCalloutMock.class, new SlackApiMock(false, 'not_in_channel'));
+
+        Test.startTest();
+        System.enqueueJob(new SlackCalloutQueueable(null, 'C0123456789', 'error path', null));
+        Test.stopTest();
+
+        SSR_Log__c row = [SELECT Status__c, Message__c FROM SSR_Log__c WHERE Recipe_Key__c = 'slack_adhoc' LIMIT 1];
+        System.assertEquals('Error', row.Status__c);
+        System.assert(row.Message__c.contains('not_in_channel'));
+    }
+
+    @IsTest
+    static void calloutQueueable_logsWhenNoTarget() {
+        Test.startTest();
+        System.enqueueJob(new SlackCalloutQueueable(null, null, 'no target', null));
+        Test.stopTest();
+
+        System.assertEquals('Error',
+            [SELECT Status__c FROM SSR_Log__c WHERE Step__c = 'notify' LIMIT 1].Status__c);
     }
 
     @IsTest

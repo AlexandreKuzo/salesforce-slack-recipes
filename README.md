@@ -16,8 +16,10 @@ Pack déployable d'intégration **Salesforce ↔ Slack** via Bot API : Flows, Ap
 git clone https://github.com/AlexandreKuzo/salesforce-slack-recipes.git
 cd salesforce-slack-recipes
 sf org login web --alias my-org
-sf project deploy start --manifest manifest/ssr-recipe01-package.xml --target-org my-org
+sf project deploy start --manifest manifest/ssr-recipe01-package.xml --target-org my-org --test-level RunLocalTests
 ```
+
+> Chaque manifest `ssr-recipeNN-package.xml` est **autoportant** : il déploie tout le socle SSR + la recette. Aucun ordre à respecter, déployez directement la recette voulue sur une org vierge. Utilisez `--test-level RunLocalTests` (requis en production, recommandé ailleurs).
 
 Après le déploiement de la recette 01 :
 
@@ -112,7 +114,7 @@ Le Flow se déclenche à la création d'un Lead (ou sur un Lead encore non scor�
 | 09 | 🔜 Bientôt | — | Agentforce Pipeline Monitor |
 | 10 | ✅ Disponible | `manifest/ssr-recipe10-package.xml` | Qualification IA + routage de lead (scoring OpenAI / fallback règles) → HOT / nurturing / disqualification + notification Slack ou e-mail |
 
-Déployer les recettes **dans l'ordre** : la recette 01 inclut le socle ; chaque recette suivante ajoute son Flow et son enregistrement CMDT.
+Chaque recette est **autoportante** : son manifest embarque tout le socle SSR (classes Apex, `SSR_Slack_Settings__c`, `SSR_Slack_Recipe__mdt`, `SSR_Log__c`, Permission Set `SSR_Slack_User`, Remote Sites). Déployez la recette voulue directement, dans n'importe quel ordre, avec `--test-level RunLocalTests`.
 
 ## Architecture (socle)
 
@@ -121,6 +123,16 @@ Flow → SlackInvocable → SlackCalloutQueueable → SlackService → Slack API
 ```
 
 Le routing des channels se fait via `SSR_Slack_Recipe__mdt` (`recipe_01`, `recipe_02`, …).
+
+## Observabilité
+
+Chaque exécution async écrit dans l'objet **`SSR_Log__c`** (une ligne par étape : `scoring`, `routing`, `notify`, `persist`…), avec statut (`Success` / `Warning` / `Error`), message, mode IA (`openai` / `fallback`) et durée. Les échecs Slack/OpenAI — silencieux jusqu'ici — y sont visibles. Onglet **SSR Logs** (visibilité via `SSR_Slack_User`).
+
+Purge : planifier `SSRLogPurgeSchedulable` après déploiement (rétention = `SSR_Slack_Settings__c.Log_Retention_Days__c`, défaut 30) :
+
+```apex
+System.schedule('SSR Log purge', '0 30 2 * * ?', new SSRLogPurgeSchedulable());
+```
 
 ## Sécurité
 

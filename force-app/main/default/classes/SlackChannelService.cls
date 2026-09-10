@@ -58,28 +58,6 @@ public with sharing class SlackChannelService {
         }
     }
 
-    public static String lookupUserByEmail(String email) {
-        if (String.isBlank(email)) {
-            return null;
-        }
-
-        try {
-            String encodedEmail = EncodingUtil.urlEncode(email.trim(), 'UTF-8');
-            HttpResponse response = SlackService.sendSlackGet('/users.lookupByEmail?email=' + encodedEmail);
-            Map<String, Object> payload = SlackService.parseSlackJson(response);
-            Boolean ok = payload.containsKey('ok') && (Boolean) payload.get('ok');
-
-            if (!ok) {
-                return null;
-            }
-
-            Map<String, Object> user = (Map<String, Object>) payload.get('user');
-            return user != null ? (String) user.get('id') : null;
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
     public static Boolean inviteUsers(String channelId, List<String> slackUserIds) {
         if (String.isBlank(channelId) || slackUserIds == null || slackUserIds.isEmpty()) {
             return true;

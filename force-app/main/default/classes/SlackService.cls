@@ -102,6 +102,31 @@ public with sharing class SlackService {
         return message + '\n<' + url + '|Voir dans Salesforce>';
     }
 
+    /**
+     * Resolves a Slack user Id from an e-mail via users.lookupByEmail.
+     * Returns null on a blank e-mail, an unknown user, or any error — callers treat
+     * "no Slack user" as a skip, not a failure. Used by recipes 07 and 08.
+     */
+    public static String lookupUserByEmail(String email) {
+        if (String.isBlank(email)) {
+            return null;
+        }
+
+        try {
+            String encodedEmail = EncodingUtil.urlEncode(email.trim(), 'UTF-8');
+            HttpResponse response = sendSlackGet('/users.lookupByEmail?email=' + encodedEmail);
+            Map<String, Object> payload = parseSlackJson(response);
+            Boolean ok = payload.containsKey('ok') && (Boolean) payload.get('ok');
+            if (!ok) {
+                return null;
+            }
+            Map<String, Object> user = (Map<String, Object>) payload.get('user');
+            return user != null ? (String) user.get('id') : null;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
     @TestVisible
     private static String resolveBotToken() {
         if (Test.isRunningTest() && String.isNotBlank(testBotTokenOverride)) {

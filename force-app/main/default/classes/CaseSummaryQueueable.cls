@@ -20,7 +20,7 @@ public class CaseSummaryQueueable implements Queueable, Database.AllowsCallouts 
         try {
             List<Case> cases = [
                 SELECT Id, CaseNumber, Subject, Description, Priority, Status, IsEscalated,
-                       Account.Name, Owner.Name, Owner.Email
+                       Account.Name, OwnerId
                 FROM Case
                 WHERE Id = :caseId
                 LIMIT 1
@@ -46,10 +46,12 @@ public class CaseSummaryQueueable implements Queueable, Database.AllowsCallouts 
             }
             log.success('summary', 'Résumé généré (' + emails.size() + ' e-mails)', summary.mode);
 
-            String ownerEmail = caseRecord.Owner != null ? caseRecord.Owner.Email : null;
-            String slackUserId = SlackChannelService.lookupUserByEmail(ownerEmail);
+            String ownerEmail = ownerEmail(caseRecord.OwnerId);
+            String slackUserId = SlackService.lookupUserByEmail(ownerEmail);
             if (String.isBlank(slackUserId)) {
-                log.warning('lookup', 'Owner Slack introuvable pour ' + ownerEmail + ' — DM non envoyé');
+                log.warning('lookup',
+                    'Owner Slack introuvable pour ' + (ownerEmail != null ? ownerEmail : '(owner sans e-mail)')
+                    + ' — DM non envoyé');
                 return;
             }
 
@@ -69,5 +71,18 @@ public class CaseSummaryQueueable implements Queueable, Database.AllowsCallouts 
         } finally {
             log.flush();
         }
+    }
+
+    /**
+     * The Case owner is polymorphic (User or Queue) and its User fields do not resolve
+     * through the Owner relationship in test context — so read the e-mail from User directly,
+     * and treat a queue-owned Case as "no e-mail".
+     */
+    private static String ownerEmail(Id ownerId) {
+        if (ownerId == null || ownerId.getSObjectType() != Schema.User.SObjectType) {
+            return null;
+        }
+        List<User> owners = [SELECT Email FROM User WHERE Id = :ownerId LIMIT 1];
+        return owners.isEmpty() ? null : owners[0].Email;
     }
 }
