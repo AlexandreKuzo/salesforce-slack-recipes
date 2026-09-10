@@ -54,29 +54,43 @@ public with sharing class SlackService {
         return postMessage(resolveChannelIdForRecipe(recipeKey), text);
     }
 
+    /**
+     * Test seam: when set, resolveChannelIdForRecipe() reads from this map (keyed by
+     * Recipe_Key__c) instead of querying SSR_Slack_Recipe__mdt — so tests do not depend on
+     * whatever channel ids happen to be deployed in the target org.
+     */
+    @TestVisible
+    private static Map<String, SSR_Slack_Recipe__mdt> testRecipesOverride;
+
     public static String resolveChannelIdForRecipe(String recipeKey) {
         if (String.isBlank(recipeKey)) {
             throw new SlackException('Recipe Key is required.');
         }
 
-        List<SSR_Slack_Recipe__mdt> recipes = [
-            SELECT Channel_Id__c, Is_Active__c
-            FROM SSR_Slack_Recipe__mdt
-            WHERE Recipe_Key__c = :recipeKey.trim()
-            LIMIT 1
-        ];
+        SSR_Slack_Recipe__mdt recipe;
+        if (Test.isRunningTest() && testRecipesOverride != null) {
+            recipe = testRecipesOverride.get(recipeKey.trim());
+        } else {
+            List<SSR_Slack_Recipe__mdt> recipes = [
+                SELECT Channel_Id__c, Is_Active__c
+                FROM SSR_Slack_Recipe__mdt
+                WHERE Recipe_Key__c = :recipeKey.trim()
+                LIMIT 1
+            ];
+            recipe = recipes.isEmpty() ? null : recipes[0];
+        }
 
-        if (recipes.isEmpty()) {
+        if (recipe == null) {
             throw new SlackException('No SSR Slack Recipe found for key: ' + recipeKey);
         }
-        if (!recipes[0].Is_Active__c) {
+        if (!recipe.Is_Active__c) {
             throw new SlackException('SSR Slack Recipe is inactive: ' + recipeKey);
         }
-        if (String.isBlank(recipes[0].Channel_Id__c)) {
+        if (String.isBlank(recipe.Channel_Id__c)) {
             throw new SlackException('Channel Id is not configured for recipe: ' + recipeKey);
         }
 
-        return recipes[0].Channel_Id__c;
+        return recipe.Channel_Id__c;
     }
 
     public static String appendRecordLink(String message, Id recordId) {

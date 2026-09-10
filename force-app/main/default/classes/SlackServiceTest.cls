@@ -1,5 +1,17 @@
 @IsTest(IsParallel=false)
 private class SlackServiceTest {
+    /** Feed resolveChannelIdForRecipe() from memory instead of the deployed CMDT. */
+    private static void stubRecipes() {
+        SlackService.testRecipesOverride = new Map<String, SSR_Slack_Recipe__mdt>{
+            'recipe_01' => new SSR_Slack_Recipe__mdt(
+                Recipe_Key__c = 'recipe_01', Channel_Id__c = 'C0123456789', Is_Active__c = true
+            ),
+            'recipe_02' => new SSR_Slack_Recipe__mdt(
+                Recipe_Key__c = 'recipe_02', Channel_Id__c = 'C0123456789', Is_Active__c = true
+            )
+        };
+    }
+
     @IsTest
     static void postMessage_success() {
         SlackService.testBotTokenOverride = 'xoxb-test-token';
@@ -33,6 +45,7 @@ private class SlackServiceTest {
 
     @IsTest
     static void postMessageForRecipe_usesCustomMetadata() {
+        stubRecipes();
         SlackService.testBotTokenOverride = 'xoxb-test-token';
         Test.setMock(HttpCalloutMock.class, new SlackApiMock(true));
 
@@ -46,11 +59,13 @@ private class SlackServiceTest {
 
     @IsTest
     static void resolveChannelIdForRecipe_recipe02() {
+        stubRecipes();
         System.assertEquals('C0123456789', SlackService.resolveChannelIdForRecipe('recipe_02'));
     }
 
     @IsTest
     static void resolveChannelIdForRecipe_unknownKey() {
+        stubRecipes();
         Boolean thrown = false;
         try {
             SlackService.resolveChannelIdForRecipe('recipe_does_not_exist');
@@ -105,6 +120,7 @@ private class SlackServiceTest {
 
     @IsTest
     static void invocable_sendMessage_withRecipeKey() {
+        stubRecipes();
         SlackService.testBotTokenOverride = 'xoxb-test-token';
         Test.setMock(HttpCalloutMock.class, new SlackApiMock(true));
 
