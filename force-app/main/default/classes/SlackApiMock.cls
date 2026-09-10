@@ -17,10 +17,14 @@ public class SlackApiMock implements HttpCalloutMock {
         response.setStatusCode(200);
         response.setHeader('Content-Type', 'application/json');
 
-        if (success) {
-            response.setBody('{"ok":true,"ts":"1234567890.123456"}');
-        } else {
+        String endpoint = req.getEndpoint() != null ? req.getEndpoint() : '';
+
+        if (!success) {
             response.setBody('{"ok":false,"error":"' + errorCode + '"}');
+        } else if (endpoint.contains('/users.lookupByEmail')) {
+            response.setBody('{"ok":true,"user":{"id":"U_LOOKUP01"}}');
+        } else {
+            response.setBody('{"ok":true,"ts":"1234567890.123456"}');
         }
 
         return response;

@@ -14,7 +14,7 @@ private class SlackInvocableTest {
         );
 
         System.assertEquals(1, responses.size());
-        System.assertEquals(true, responses[0].success, String.valueOf(responses[0].errorMessage));
+        System.assertEquals(true, responses[0].success, 'errorMessage: ' + responses[0].errorMessage);
     }
 
     @IsTest
@@ -30,7 +30,7 @@ private class SlackInvocableTest {
             new List<SlackInvocable.Request>{ req }
         );
 
-        System.assertEquals(true, responses[0].success, String.valueOf(responses[0].errorMessage));
+        System.assertEquals(true, responses[0].success, 'errorMessage: ' + responses[0].errorMessage);
     }
 
     @IsTest

@@ -1,18 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- SSR Recipe 07 — Dynamic Slack channel provisioning. Self-contained: deploys the whole SSR stack + this recipe. -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
+        <members>CaseSummaryApiMock</members>
+        <members>CaseSummaryInvocable</members>
+        <members>CaseSummaryQueueable</members>
+        <members>CaseSummaryService</members>
+        <members>CaseSummaryServiceTest</members>
+        <members>LeadQualificationApiMock</members>
+        <members>LeadQualificationInvocable</members>
+        <members>LeadQualificationQueueable</members>
+        <members>LeadScoringService</members>
+        <members>LeadScoringServiceTest</members>
+        <members>SSRLogPurgeSchedulable</members>
+        <members>SSRLogPurgeSchedulableTest</members>
+        <members>SSRLogger</members>
+        <members>SSRLoggerTest</members>
+        <members>SlackApiMock</members>
+        <members>SlackCalloutQueueable</members>
         <members>SlackChannelApiMock</members>
         <members>SlackChannelInvocable</members>
         <members>SlackChannelProvisionerQueueable</members>
         <members>SlackChannelProvisionerTest</members>
         <members>SlackChannelService</members>
+        <members>SlackInvocable</members>
+        <members>SlackInvocableTest</members>
         <members>SlackService</members>
         <members>SlackServiceTest</members>
         <name>ApexClass</name>
     </types>
     <types>
+        <members>SSR_Lead_Industry_Score__mdt</members>
+        <members>SSR_Lead_Scoring_Config__mdt</members>
+        <members>SSR_Log__c</members>
+        <members>SSR_Slack_Recipe__mdt</members>
+        <members>SSR_Slack_Settings__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Lead.AI_Reasoning__c</members>
+        <members>Lead.Confidence__c</members>
+        <members>Lead.Disqualification_Reason__c</members>
+        <members>Lead.Score__c</members>
+        <members>Lead.Scored_At__c</members>
         <members>Opportunity.SlackChannelId__c</members>
+        <members>SSR_Lead_Industry_Score__mdt.Industry__c</members>
+        <members>SSR_Lead_Industry_Score__mdt.Points__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.Disqualified_Status__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.High_Threshold__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.Hot_Lead_Owner_Id__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.Icp_Description__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.Low_Threshold__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.Nurture_Campaign_Id__c</members>
+        <members>SSR_Lead_Scoring_Config__mdt.Slack_Recipe_Key__c</members>
+        <members>SSR_Log__c.Duration_Ms__c</members>
+        <members>SSR_Log__c.Job_Id__c</members>
+        <members>SSR_Log__c.Message__c</members>
+        <members>SSR_Log__c.Mode__c</members>
+        <members>SSR_Log__c.Recipe_Key__c</members>
+        <members>SSR_Log__c.Record_Id__c</members>
+        <members>SSR_Log__c.Status__c</members>
+        <members>SSR_Log__c.Step__c</members>
+        <members>SSR_Slack_Recipe__mdt.Channel_Id__c</members>
+        <members>SSR_Slack_Recipe__mdt.Is_Active__c</members>
+        <members>SSR_Slack_Recipe__mdt.Recipe_Key__c</members>
+        <members>SSR_Slack_Settings__c.Bot_Token__c</members>
+        <members>SSR_Slack_Settings__c.Log_Retention_Days__c</members>
+        <members>SSR_Slack_Settings__c.OpenAI_Api_Key__c</members>
         <name>CustomField</name>
+    </types>
+    <types>
+        <members>SSR_Log__c</members>
+        <name>CustomTab</name>
     </types>
     <types>
         <members>SSR_Recipe07_Slack_Channel_Create</members>
@@ -21,6 +80,11 @@
     <types>
         <members>SSR_Slack_User</members>
         <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>SSR_OpenAI</members>
+        <members>SSR_Slack</members>
+        <name>RemoteSiteSetting</name>
     </types>
     <version>65.0</version>
 </Package>

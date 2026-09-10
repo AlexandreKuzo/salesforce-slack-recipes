@@ -25,6 +25,15 @@ private class LeadScoringServiceTest {
         );
     }
 
+    /** Resolve recipe_10 from memory so the queueable's notify() does not depend on the deployed CMDT. */
+    private static void stubRecipe10() {
+        SlackService.testRecipesOverride = new Map<String, SSR_Slack_Recipe__mdt>{
+            'recipe_10' => new SSR_Slack_Recipe__mdt(
+                Recipe_Key__c = 'recipe_10', Channel_Id__c = 'C0123456789', Is_Active__c = true
+            )
+        };
+    }
+
     @IsTest
     static void scoreLead_usesFallbackWithoutKey() {
         LeadScoringService.forceNoOpenAiKeyInTest = true;
@@ -180,6 +189,7 @@ private class LeadScoringServiceTest {
         LeadScoringService.forceNoOpenAiKeyInTest = true;
         LeadScoringService.testConfigOverride = config(70, 40, 'recipe_10', null);
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock());
+        stubRecipe10();
 
         Lead lead = newLead('Acme SaaS', 'Technology', 500, 'CTO', 'cto@acme.example');
         insert lead;
@@ -202,6 +212,7 @@ private class LeadScoringServiceTest {
         LeadScoringService.forceNoOpenAiKeyInTest = true;
         LeadScoringService.testConfigOverride = config(70, 40, 'recipe_10', null);
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock());
+        stubRecipe10();
 
         Lead lead = newLead('Nobody Ltd', null, null, null, null);
         insert lead;
@@ -221,6 +232,7 @@ private class LeadScoringServiceTest {
         LeadScoringService.forceNoOpenAiKeyInTest = true;
         LeadScoringService.testConfigOverride = config(70, 40, 'recipe_absent', null);
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock());
+        stubRecipe10();
 
         Lead lead = newLead('Fallback Co', 'Technology', 300, 'CTO', 'c@fallback.example');
         insert lead;
@@ -313,6 +325,7 @@ private class LeadScoringServiceTest {
             Hot_Lead_Owner_Id__c = UserInfo.getUserId()
         );
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock());
+        stubRecipe10();
 
         Lead lead = newLead('Acme SaaS', 'Technology', 500, 'CTO', 'cto@acme.example');
         insert lead;
@@ -331,6 +344,7 @@ private class LeadScoringServiceTest {
         SlackService.testBotTokenOverride = 'xoxb-test-token';
         LeadScoringService.forceNoOpenAiKeyInTest = true;
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock());
+        stubRecipe10();
 
         Campaign campaign = new Campaign(Name = 'SSR Nurture', IsActive = true);
         insert campaign;
@@ -364,6 +378,7 @@ private class LeadScoringServiceTest {
             Disqualified_Status__c = 'This Status Does Not Exist 123'
         );
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock());
+        stubRecipe10();
 
         Lead lead = newLead('Nobody Ltd', null, null, null, null);
         insert lead;
@@ -384,6 +399,7 @@ private class LeadScoringServiceTest {
         LeadScoringService.forceNoOpenAiKeyInTest = true;
         LeadScoringService.testConfigOverride = config(70, 40, 'recipe_10', null);
         Test.setMock(HttpCalloutMock.class, new LeadQualificationApiMock(82, false));
+        stubRecipe10();
 
         Lead lead = newLead('Rejected Co', 'Technology', 300, 'CTO', 'c@rejected.example');
         insert lead;
